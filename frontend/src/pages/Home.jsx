@@ -7,6 +7,27 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+const categories = [
+  "All",
+  "Movie",
+  "Book",
+  "Restaurant",
+  "Food & Drink",
+  "Music",
+  "Video Game",
+  "Product",
+  "Other",
+];
+
+const filteredRatings =
+  selectedCategory === "All"
+    ? ratings
+    : ratings.filter(
+        (rating) => rating.category === selectedCategory
+      );
+
   async function fetchRatings() {
     setLoading(true);
     setError("");
@@ -103,6 +124,19 @@ function Home() {
               ↻ Refresh
             </button>
           </div>
+          <div className="category-filters">
+            {categories.map((category) => (
+              <button
+                key={category}
+                className={`category-filter ${
+                  selectedCategory === category ? "active" : ""
+                }`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category === "All" ? "All Ratings" : category}
+              </button>
+            ))}
+          </div>  
 
           {loading && (
             <div className="feed-message">
@@ -131,9 +165,15 @@ function Home() {
             </div>
           )}
 
-          {!loading && !error && ratings.length > 0 && (
+          {!loading && !error && filteredRatings.length === 0 && ratings.length > 0 && (
+            <div className="feed-message">
+              No ratings found in this category yet.
+            </div>
+          )}
+
+          {!loading && !error && filteredRatings.length > 0 && (
             <div className="rating-list">
-              {ratings.map((rating) => (
+              {filteredRatings.map((rating) => (
                 <article className="rating-card" key={rating.id}>
                   <div className="rating-card-top">
                     <div className="user-avatar">
